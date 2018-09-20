@@ -77,17 +77,12 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
         for (int i=1;i<width-1;i++){
             for (int j=1;j<height-1;j++){
-                if (b.getPixel(i,j)!=b.getPixel(i,j+1)){
-                    result.setPixel(i,j,Color.RED);
-                    result.setPixel(i,j+1,Color.RED);
-                }
-                if (b.getPixel(i,j)!=b.getPixel(i+1,j+1)){
-                    result.setPixel(i,j,Color.RED);
-                    result.setPixel(i+1,j+1,Color.RED);
-                }
-                if (b.getPixel(i,j)!=b.getPixel(i+1,j)){
-                    result.setPixel(i,j,Color.RED);
-                    result.setPixel(i+1,j,Color.RED);
+                if (Math.abs(b.getPixel(i,j)-b.getPixel(i+1,j))>=2000000){
+                    result.setPixel(i,j, Color.RED);
+                } else if (Math.abs(b.getPixel(i,j)-b.getPixel(i+1,j+1))>=2000000){
+                    result.setPixel(i,j, Color.RED);
+                } else if (Math.abs(b.getPixel(i,j)-b.getPixel(i,j+1))>=2000000){
+                    result.setPixel(i,j, Color.RED);
                 }
             }
         }
