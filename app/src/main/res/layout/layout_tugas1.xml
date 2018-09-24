@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/view_image_ori"
+            android:layout_width="170dp"
+            android:layout_height="200dp"
+            android:adjustViewBounds="true"
+            android:maxWidth="200dp"
+            android:maxHeight="200dp"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:layout_marginTop="3dp"
+            android:layout_marginLeft="5dp"
+            android:src="@mipmap/ic_launcher" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="RED"
+            android:textSize="30sp" />
+
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/graphRed"
+            android:layout_width="match_parent"
+            android:layout_height="200dip" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="GREEN"
+            android:textSize="30sp" />
+
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/graphGreen"
+            android:layout_width="match_parent"
+            android:layout_height="200dip" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="BLUE"
+            android:textSize="30sp" />
+
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/graphBlue"
+            android:layout_width="match_parent"
+            android:layout_height="200dip" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="GRAY"
+            android:textSize="30sp" />
+
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/graphGray"
+            android:layout_width="match_parent"
+            android:layout_height="200dip" />
+
+    </LinearLayout>
+</ScrollView>

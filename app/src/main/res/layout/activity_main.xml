@@ -9,226 +9,47 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/view_image_ori"
-            android:layout_width="170dp"
-            android:layout_height="200dp"
-            android:adjustViewBounds="true"
-            android:maxWidth="200dp"
-            android:maxHeight="200dp"
-            android:layout_gravity="center"
-            android:scaleType="fitCenter"
-            android:layout_marginTop="3dp"
-            android:layout_marginLeft="5dp"
-            android:src="@mipmap/ic_launcher" />
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="RED"
-            android:textSize="30sp" />
+            android:text="23518002 / Andreas Novian Dwi Triastanto"
+            android:textSize="20sp" />
 
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphRed"
-            android:layout_width="match_parent"
-            android:layout_height="200dip" />
-
-        <TextView
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="GREEN"
-            android:textSize="30sp" />
+            android:text="Tugas 1 Histogram RGB"
+            android:id="@+id/buttonTugas1"/>
 
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphGreen"
-            android:layout_width="match_parent"
-            android:layout_height="200dip" />
-
-        <TextView
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="BLUE"
-            android:textSize="30sp" />
+            android:text="Tugas 2 Histogram Ekualisasi dan Transformasi"
+            android:id="@+id/buttonTugas2"/>
 
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphBlue"
-            android:layout_width="match_parent"
-            android:layout_height="200dip" />
-
-        <TextView
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="GRAY"
-            android:textSize="30sp" />
+            android:text="Tugas 3 SeekBar Ekualisasi dan Image Smoothing"
+            android:id="@+id/buttonTugas3"/>
 
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphGray"
-            android:layout_width="match_parent"
-            android:layout_height="200dip" />
-
-        <TextView
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="HISTOGRAM KUMULATIF"
-            android:textSize="30sp" />
+            android:text="Tugas 4 Deteksi Angka Arial"
+            android:id="@+id/buttonTugas4"/>
 
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graphKumulatif"
-            android:layout_width="match_parent"
-            android:layout_height="200dip" />
-
-        <TextView
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="EKUALISASI GRAYSCALE"
-            android:textSize="30sp" />
+            android:text="Tugas 5 Deteksi Angka Seven Segment"
+            android:id="@+id/buttonTugas5"/>
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/view_image_grayscale_ori"
-                android:layout_width="170dp"
-                android:layout_height="200dp"
-                android:adjustViewBounds="true"
-                android:maxWidth="200dp"
-                android:maxHeight="200dp"
-                android:scaleType="fitCenter"
-                android:layout_marginTop="3dp"
-                android:layout_marginLeft="5dp"
-                android:src="@mipmap/ic_launcher" />
-
-            <ImageView
-                android:id="@+id/view_image_grayscale_transform"
-                android:layout_width="170dp"
-                android:layout_height="200dp"
-                android:adjustViewBounds="true"
-                android:maxWidth="200dp"
-                android:maxHeight="200dp"
-                android:scaleType="fitCenter"
-                android:layout_marginTop="3dp"
-                android:layout_marginLeft="5dp"
-                android:src="@mipmap/ic_launcher" />
-
-        </LinearLayout>
-
-        <SeekBar
-            android:id="@+id/seekbarGrayscale"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:max="100"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="EKUALISASI RGB"
-            android:textSize="30sp" />
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/view_image_RGB_ori"
-                android:layout_width="170dp"
-                android:layout_height="200dp"
-                android:adjustViewBounds="true"
-                android:maxWidth="200dp"
-                android:maxHeight="200dp"
-                android:scaleType="fitCenter"
-                android:layout_marginTop="3dp"
-                android:layout_marginLeft="5dp"
-                android:src="@mipmap/ic_launcher" />
-
-            <ImageView
-                android:id="@+id/view_image_RGB_transform"
-                android:layout_width="170dp"
-                android:layout_height="200dp"
-                android:adjustViewBounds="true"
-                android:maxWidth="200dp"
-                android:maxHeight="200dp"
-                android:scaleType="fitCenter"
-                android:layout_marginTop="3dp"
-                android:layout_marginLeft="5dp"
-                android:src="@mipmap/ic_launcher" />
-
-        </LinearLayout>
-
-        <SeekBar
-            android:id="@+id/seekbarRGB"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:max="100"/>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="IMAGE SMOOTHING"
-            android:textSize="30sp" />
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/view_image_smoothing_ori"
-                android:layout_width="170dp"
-                android:layout_height="200dp"
-                android:adjustViewBounds="true"
-                android:maxWidth="200dp"
-                android:maxHeight="200dp"
-                android:scaleType="fitCenter"
-                android:layout_marginTop="3dp"
-                android:layout_marginLeft="5dp"
-                android:src="@mipmap/ic_launcher" />
-
-            <ImageView
-                android:id="@+id/view_image_smoothing_transform"
-                android:layout_width="170dp"
-                android:layout_height="200dp"
-                android:adjustViewBounds="true"
-                android:maxWidth="200dp"
-                android:maxHeight="200dp"
-                android:scaleType="fitCenter"
-                android:layout_marginTop="3dp"
-                android:layout_marginLeft="5dp"
-                android:src="@mipmap/ic_launcher" />
-
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="EDGE DETECTION"
-            android:textSize="30sp" />
-
-        <ImageView
-            android:id="@+id/view_image_number_ori"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:maxWidth="220dp"
-            android:maxHeight="200dp"
-            android:scaleType="fitCenter"
-            android:layout_marginTop="7dp"
-            android:layout_gravity="center"
-            android:src="@drawable/number" />
-
-        <ImageView
-            android:id="@+id/view_image_number_detect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:maxWidth="220dp"
-            android:maxHeight="200dp"
-            android:scaleType="fitCenter"
-            android:layout_marginTop="7dp"
-            android:layout_gravity="center"
-            android:src="@drawable/number" />
+            android:text="Tugas 6 Algoritma Thinning"
+            android:id="@+id/buttonTugas6"/>
 
     </LinearLayout>
 </ScrollView>

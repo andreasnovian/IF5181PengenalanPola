@@ -16,6 +16,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+		<activity android:name=".Act_Tugas1" />
+		<activity android:name=".Act_Tugas2" />
+		<activity android:name=".Act_Tugas3" />
+		<activity android:name=".Act_Tugas4" />
+		<activity android:name=".Act_Tugas5" />
+		<activity android:name=".Act_Tugas6" />
     </application>
 
 </manifest>
