@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button buttonTugas4;
     private Button buttonTugas5;
     private Button buttonTugas6;
+    private Button buttonTugasUTS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.buttonTugas4 = this.findViewById(R.id.buttonTugas4);
         this.buttonTugas5 = this.findViewById(R.id.buttonTugas5);
         this.buttonTugas6 = this.findViewById(R.id.buttonTugas6);
+        this.buttonTugasUTS = this.findViewById(R.id.buttonTugasUTS);
 
         this.buttonTugas1.setOnClickListener(this);
         this.buttonTugas2.setOnClickListener(this);
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.buttonTugas4.setOnClickListener(this);
         this.buttonTugas5.setOnClickListener(this);
         this.buttonTugas6.setOnClickListener(this);
+        this.buttonTugasUTS.setOnClickListener(this);
     }
 
     @Override
@@ -52,6 +55,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (v==buttonTugas6){
             this.tugas6();
+        }
+        if (v==buttonTugasUTS){
+            this.tugasUTS();
         }
     }
 
@@ -82,6 +88,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void tugas6() {
         Intent intent = new Intent(MainActivity.this, Act_Tugas6.class);
+        startActivity(intent);
+    }
+
+    private void tugasUTS() {
+        Intent intent = new Intent(MainActivity.this, Act_TugasUTS.class);
         startActivity(intent);
     }
 }

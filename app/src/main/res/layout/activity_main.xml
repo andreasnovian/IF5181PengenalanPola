@@ -51,5 +51,11 @@
             android:text="Tugas 6 Algoritma Thinning"
             android:id="@+id/buttonTugas6"/>
 
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tugas UTS Skeleton Recognition"
+            android:id="@+id/buttonTugasUTS"/>
+
     </LinearLayout>
 </ScrollView>

@@ -1,114 +1,79 @@
 package com.example.andre.if5181_pengenalanpola;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.provider.MediaStore;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class Act_Tugas6 extends AppCompatActivity {
+public class Act_TugasUTS extends AppCompatActivity {
 
-    private ImageView imageView;
-    private TextView textView;
+    private final int GRAYSCALE = 3;
+
+    ImageView imageView, imageViewThinningZS, imageViewThinningC;
+    Bitmap numberBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_tugas6);
+        setContentView(R.layout.layout_tugasuts);
 
         imageView = findViewById(R.id.imageView);
-        textView = findViewById(R.id.textView);
+        imageView.invalidate();
+        BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
+        numberBitmap = drawable.getBitmap();
+        numberBitmap = getBinaryImage(numberBitmap, 128);
+        imageView.setImageBitmap(numberBitmap);
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-        }
+        Bitmap[] result = getSkeleton(numberBitmap);
+
+        imageViewThinningZS = findViewById(R.id.imageViewThinningZS);
+        imageViewThinningZS.setImageBitmap(result[0]);
+
+        imageViewThinningC = findViewById(R.id.imageViewThinningC);
+        imageViewThinningC.setImageBitmap(result[1]);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        try {
-            if (resultCode == RESULT_OK && data != null) {
-                if (requestCode == 1 && data.getData() != null) {
-                    Cursor cursor = getContentResolver().query(data.getData(), new String[]{MediaStore.Images.Media.DATA}, null, null, null);
+    private Bitmap getBinaryImage(Bitmap bitmap, int threshold) {
+        Bitmap result = bitmap.copy(bitmap.getConfig(), true);
+        int[] color;
 
-                    if (cursor == null)
-                        return;
+        for (int i = 0; i < bitmap.getWidth(); i++) {
+            for (int j = 0; j < bitmap.getHeight(); j++) {
+                color = getPixelColor(bitmap, i, j);
 
-                    cursor.moveToFirst();
-                    String imageString = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-                    cursor.close();
-
-                    Bitmap image = BitmapFactory.decodeFile(imageString);
-
-                    imageView.setImageBitmap(getBinaryImage(image, 128));
-                } else if (requestCode == 2 && data.getExtras().get("data") != null) {
-                    Bitmap image = (Bitmap) data.getExtras().get("data");
-
-                    imageView.setImageBitmap(getBinaryImage(image, 128));
+                if (color[GRAYSCALE] < threshold) {
+                    setPixelColor(result, i, j, 0, 0, 0);
+                } else {
+                    setPixelColor(result, i, j, 255, 255, 255);
                 }
             }
-
-        } catch (Exception e) {
-            Toast.makeText(this, String.format("Error : %s", e.getMessage()), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-    }
-
-    public void loadImage(View view) {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(intent, 1);
-    }
-
-    public void openCamera(View view) {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, 2);
-    }
-
-    public void process(View view) {
-        Bitmap image = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        Bitmap result = getSkeletonFeature(image, textView);
-
-        imageView.setImageBitmap(result);
-    }
-
-    private static Bitmap getBinaryImage(Bitmap bitmap, int threshold) {
-        int height = bitmap.getHeight();
-        int width = bitmap.getWidth();
-        int size = width * height;
-        int[] pixels = new int[size];
-
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-
-        for (int i = 0; i < size; i++) {
-            int pixel = pixels[i];
-            int grayscale = (((pixel & 0x00ff0000) >> 16) + ((pixel & 0x0000ff00) >> 8) + (pixel & 0x000000ff)) / 3;
-
-            if (grayscale < threshold) {
-                pixels[i] = pixel & 0xff000000;
-            } else {
-                pixels[i] = pixel | 0x00ffffff;
-            }
         }
 
-        return Bitmap.createBitmap(pixels, bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+        return result;
     }
 
-    private static Bitmap[] getSkeleton(Bitmap bitmap) {
+    private int[] getPixelColor(Bitmap bitmap, int x, int y) {
+        int pixel, red, green, blue, grayscale;
+
+        pixel = bitmap.getPixel(x, y);
+        red = Color.red(pixel);
+        green = Color.green(pixel);
+        blue = Color.blue(pixel);
+        grayscale = (red + green + blue) / 3;
+
+        return new int[]{red, green, blue, grayscale};
+    }
+
+    private void setPixelColor(Bitmap bitmap, int x, int y, int red, int green, int blue) {
+        bitmap.setPixel(x, y, Color.argb(255, red, green, blue));
+    }
+
+    private Bitmap[] getSkeleton(Bitmap bitmap) {
         int count;
         int[] border;
 
@@ -144,41 +109,7 @@ public class Act_Tugas6 extends AppCompatActivity {
         };
     }
 
-    private static Bitmap getSkeletonFeature(Bitmap bitmap, TextView textView) {
-        int count;
-        int[] border;
-
-        int height = bitmap.getHeight();
-        int width = bitmap.getWidth();
-        int size = height * width;
-        int[] pixels = new int[size];
-        int[] pixelsa = new int[size];
-        StringBuffer stringBuffer = new StringBuffer();
-
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-        bitmap.getPixels(pixelsa, 0, width, 0, 0, width, height);
-
-        for (int j = 0; j < height; j++) {
-            for (int i = 0; i < width; i++) {
-                if ((pixels[i + j * width] & 0x000000ff) != 255) {
-                    border = floodFill(pixels, i, j, width);
-
-                    do {
-                        count = zhangSuenStep(pixelsa, border[0], border[1], border[2], border[3], width);
-                    }
-                    while (count != 0);
-
-                    stringBuffer.append(extractFeature(pixelsa, border[0], border[1], border[2], border[3], width));
-                }
-            }
-        }
-
-        textView.setText(stringBuffer);
-
-        return Bitmap.createBitmap(pixelsa, width, height, bitmap.getConfig());
-    }
-
-    private static int zhangSuenStep(int[] pixels, int xmin, int ymin, int xmax, int ymax, int width) {
+    private int zhangSuenStep(int[] pixels, int xmin, int ymin, int xmax, int ymax, int width) {
         int count = 0;
 
         for (int j = ymin; j <= ymax; j++) {
@@ -272,7 +203,7 @@ public class Act_Tugas6 extends AppCompatActivity {
         return new int[]{countA, countB};
     }
 
-    private static void customStep(int[] pixels, int xmin, int ymin, int xmax, int ymax, int x, int y, int width) {
+    private void customStep(int[] pixels, int xmin, int ymin, int xmax, int ymax, int x, int y, int width) {
         int counterDirection, length, c, d, averageLength;
 
         int a = x;
@@ -365,7 +296,7 @@ public class Act_Tugas6 extends AppCompatActivity {
         }
     }
 
-    private static int[] floodFill(int[] pixels, int x, int y, int width) {
+    private int[] floodFill(int[] pixels, int x, int y, int width) {
 
         int xmax = x;
         int xmin = x;
@@ -403,95 +334,5 @@ public class Act_Tugas6 extends AppCompatActivity {
         }
 
         return new int[]{xmin, ymin, xmax, ymax};
-    }
-
-    private static StringBuffer extractFeature(int[] pixels, int xmin, int ymin, int xmax, int ymax, int width) {
-        int next, i, j, neighbourCount;
-
-        int p = 0;
-        int endCount = 0;
-        int[][] moves = new int[8][8];
-        boolean end = false;
-        Queue<Integer> queue = new LinkedList<>();
-
-        j = ymin;
-        while (p == 0 && j <= ymax) {
-            i = xmin;
-            while (p == 0 && i <= xmax) {
-                if ((pixels[i + j * width] & 0x000000ff) == 0)
-                    p = i + j * width;
-
-                i++;
-            }
-            j++;
-        }
-
-        if (p != 0) {
-            next = p;
-            int before = 2;
-            int temp = 0;
-            while (!end) {
-                int[] neighbours = {
-                        p - width,
-                        p - width + 1,
-                        p + 1,
-                        p + width + 1,
-                        p + width,
-                        p + width - 1,
-                        p - 1,
-                        p - width - 1
-                };
-
-                //Log.i("pixel", "" + p);
-
-                pixels[p] = pixels[p] | 0x0000ff00;
-                neighbourCount = 0;
-
-                for (i = 0; i < 8; i++) {
-                    if ((pixels[neighbours[i]] & 0x000000ff) == 0) {
-                        neighbourCount++;
-
-                        if ((pixels[neighbours[i]] & 0x0000ff00) >> 8 == 0) {
-                            moves[before][i]++;
-                            if (next == p) {
-                                next = neighbours[i];
-                                temp = i;
-                            } else {
-                                queue.offer(neighbours[i]);
-                            }
-                        }
-                    }
-                }
-
-                if (neighbourCount == 1) endCount++;
-
-                if (next != p) {
-                    p = next;
-                    before = temp;
-                } else {
-                    while (!queue.isEmpty() && (pixels[queue.peek()] & 0x0000ffff) != 0) {
-                        queue.poll();
-                    }
-
-                    if (queue.isEmpty()) {
-                        end = true;
-                    } else {
-                        p = queue.poll();
-                        next = p;
-                    }
-                }
-            }
-        }
-
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(String.format("End Count : %d\r\n", endCount));
-        stringBuffer.append("Moves :\r\n");
-        for (int a = 0; a < 8; a++) {
-            for (int b = 0; b < 8; b++) {
-                stringBuffer.append(String.format("%d %d | %d\r\n", a, b, moves[a][b]));
-            }
-        }
-
-        return stringBuffer;
     }
 }
