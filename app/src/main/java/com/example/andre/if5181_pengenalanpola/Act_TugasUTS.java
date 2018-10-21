@@ -12,6 +12,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -119,7 +120,7 @@ public class Act_TugasUTS extends AppCompatActivity {
         return Bitmap.createBitmap(pixels, bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
     }
 
-    private StringBuffer getSkeletonFeature(Bitmap bitmap) {
+    private String getSkeletonFeature(Bitmap bitmap) {
         int count;
         int[] border, border2;
 
@@ -128,7 +129,6 @@ public class Act_TugasUTS extends AppCompatActivity {
         int size = height * width;
         int[] pixels = new int[size];
         int[] pixelsa = new int[size];
-        StringBuffer stringBuffer = new StringBuffer();
         String feature = "";
 
         bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
@@ -147,22 +147,25 @@ public class Act_TugasUTS extends AppCompatActivity {
                     border2 = getNewBorder(pixelsa, border[0], border[1], border[2], border[3], width);
                     SkeletonFeature sf = extractFeature(pixelsa, border2[0], border2[1], border2[2], border2[3], width);
 
-                    stringBuffer.append(String.format("%d,%b,%b,%b,%b,%b,%b,%b,%b,%b\r\n",
-                            sf.endpoints.size(),
-                            sf.hTop, sf.hMid, sf.hBottom,
-                            sf.vLeft, sf.vMid, sf.vRight,
-                            sf.lTop, sf.lMid, sf.lBottom));
-
-                    feature = sf.endpoints.size() + "," +
+                    feature += sf.endpoints.size() + "," +
                             sf.hTop + "," + sf.hMid + "," + sf.hBottom + "," +
                             sf.vLeft + "," + sf.vMid + "," + sf.vRight + "," +
-                            sf.lTop + "," + sf.lMid + "," + sf.lBottom;
+                            sf.lTop + "," + sf.lMid + "," + sf.lBottom + "\r\n";
                 }
             }
         }
+        feature = feature.trim();
 
-        textViewResult.setText("Character : " + SkeletonRecognizer.recognize(feature));
-        return stringBuffer;
+        String result = "";
+        String[] features = feature.split("\r\n");
+        for (int i = 0;i<features.length;i++){
+            Log.d("feature",features[i]);
+            result += SkeletonRecognizer.recognize(features[i]) + "\r\n";
+        }
+
+        result = result.trim();
+        textViewResult.setText("Character : " + result);
+        return feature;
     }
 
     private int zhangSuenStep(int[] pixels, int xmin, int ymin, int xmax, int ymax, int width) {
