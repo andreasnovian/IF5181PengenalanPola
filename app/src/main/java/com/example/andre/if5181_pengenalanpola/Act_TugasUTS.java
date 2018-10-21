@@ -1,21 +1,33 @@
 package com.example.andre.if5181_pengenalanpola;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.OutputStreamWriter;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class Act_TugasUTS extends AppCompatActivity {
 
-    private final int GRAYSCALE = 3;
-
-    ImageView imageView, imageViewThinningZS, imageViewThinningC;
-    Bitmap numberBitmap;
+    private ImageView imageView;
+    private TextView textViewFeature, textViewResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,70 +35,104 @@ public class Act_TugasUTS extends AppCompatActivity {
         setContentView(R.layout.layout_tugasuts);
 
         imageView = findViewById(R.id.imageView);
-        imageView.invalidate();
-        BitmapDrawable drawable = (BitmapDrawable) imageView.getDrawable();
-        numberBitmap = drawable.getBitmap();
-        numberBitmap = getBinaryImage(numberBitmap, 128);
-        imageView.setImageBitmap(numberBitmap);
+        textViewFeature = findViewById(R.id.textViewFeature);
+        textViewResult = findViewById(R.id.textViewResult);
 
-        Bitmap[] result = getSkeleton(numberBitmap);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+        }
 
-        imageViewThinningZS = findViewById(R.id.imageViewThinningZS);
-        imageViewThinningZS.setImageBitmap(result[0]);
-
-        imageViewThinningC = findViewById(R.id.imageViewThinningC);
-        imageViewThinningC.setImageBitmap(result[1]);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+        }
     }
 
-    private Bitmap getBinaryImage(Bitmap bitmap, int threshold) {
-        Bitmap result = bitmap.copy(bitmap.getConfig(), true);
-        int[] color;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            if (resultCode == RESULT_OK && data != null) {
+                if (requestCode == 1 && data.getData() != null) {
+                    Cursor cursor = getContentResolver().query(data.getData(), new String[]{MediaStore.Images.Media.DATA}, null, null, null);
 
-        for (int i = 0; i < bitmap.getWidth(); i++) {
-            for (int j = 0; j < bitmap.getHeight(); j++) {
-                color = getPixelColor(bitmap, i, j);
+                    if (cursor == null)
+                        return;
 
-                if (color[GRAYSCALE] < threshold) {
-                    setPixelColor(result, i, j, 0, 0, 0);
-                } else {
-                    setPixelColor(result, i, j, 255, 255, 255);
+                    cursor.moveToFirst();
+                    String imageString = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                    cursor.close();
+
+                    Bitmap image = BitmapFactory.decodeFile(imageString);
+
+                    imageView.setImageBitmap(getBinaryImage(image, 128));
+                } else if (requestCode == 2 && data.getExtras().get("data") != null) {
+                    Bitmap image = (Bitmap) data.getExtras().get("data");
+
+                    imageView.setImageBitmap(getBinaryImage(image, 128));
+                } else if (requestCode == 3) {
+                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(openFileOutput("configmenori.txt", MODE_PRIVATE));
+                    outputStreamWriter.write("test");
+                    outputStreamWriter.close();
                 }
+            }
+
+        } catch (Exception e) {
+            Toast.makeText(this, String.format("Error : %s", e.getMessage()), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+    }
+
+    public void loadImage(View view) {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, 1);
+    }
+
+    public void openCamera(View view) {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, 2);
+    }
+
+    public void process(View view) {
+        Bitmap image = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        textViewFeature.setText("Feature : " + getSkeletonFeature(image));
+    }
+
+    private static Bitmap getBinaryImage(Bitmap bitmap, int threshold) {
+        int height = bitmap.getHeight();
+        int width = bitmap.getWidth();
+        int size = width * height;
+        int[] pixels = new int[size];
+
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+
+        for (int i = 0; i < size; i++) {
+            int pixel = pixels[i];
+            int grayscale = (((pixel & 0x00ff0000) >> 16) + ((pixel & 0x0000ff00) >> 8) + (pixel & 0x000000ff)) / 3;
+
+            if (grayscale < threshold) {
+                pixels[i] = pixel & 0xff000000;
+            } else {
+                pixels[i] = pixel | 0x00ffffff;
             }
         }
 
-        return result;
+        return Bitmap.createBitmap(pixels, bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
     }
 
-    private int[] getPixelColor(Bitmap bitmap, int x, int y) {
-        int pixel, red, green, blue, grayscale;
-
-        pixel = bitmap.getPixel(x, y);
-        red = Color.red(pixel);
-        green = Color.green(pixel);
-        blue = Color.blue(pixel);
-        grayscale = (red + green + blue) / 3;
-
-        return new int[]{red, green, blue, grayscale};
-    }
-
-    private void setPixelColor(Bitmap bitmap, int x, int y, int red, int green, int blue) {
-        bitmap.setPixel(x, y, Color.argb(255, red, green, blue));
-    }
-
-    private Bitmap[] getSkeleton(Bitmap bitmap) {
+    private StringBuffer getSkeletonFeature(Bitmap bitmap) {
         int count;
-        int[] border;
+        int[] border, border2;
 
         int height = bitmap.getHeight();
         int width = bitmap.getWidth();
         int size = height * width;
         int[] pixels = new int[size];
         int[] pixelsa = new int[size];
-        int[] pixelsb = new int[size];
+        StringBuffer stringBuffer = new StringBuffer();
+        String feature = "";
 
         bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
         bitmap.getPixels(pixelsa, 0, width, 0, 0, width, height);
-        bitmap.getPixels(pixelsb, 0, width, 0, 0, width, height);
 
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
@@ -98,15 +144,25 @@ public class Act_TugasUTS extends AppCompatActivity {
                     }
                     while (count != 0);
 
-                    customStep(pixelsb, border[0], border[1], border[2], border[3], i, j, width);
+                    border2 = getNewBorder(pixelsa, border[0], border[1], border[2], border[3], width);
+                    SkeletonFeature sf = extractFeature(pixelsa, border2[0], border2[1], border2[2], border2[3], width);
+
+                    stringBuffer.append(String.format("%d,%b,%b,%b,%b,%b,%b,%b,%b,%b\r\n",
+                            sf.endpoints.size(),
+                            sf.hTop, sf.hMid, sf.hBottom,
+                            sf.vLeft, sf.vMid, sf.vRight,
+                            sf.lTop, sf.lMid, sf.lBottom));
+
+                    feature = sf.endpoints.size() + "," +
+                            sf.hTop + "," + sf.hMid + "," + sf.hBottom + "," +
+                            sf.vLeft + "," + sf.vMid + "," + sf.vRight + "," +
+                            sf.lTop + "," + sf.lMid + "," + sf.lBottom;
                 }
             }
         }
 
-        return new Bitmap[]{
-                Bitmap.createBitmap(pixelsa, width, height, bitmap.getConfig()),
-                Bitmap.createBitmap(pixelsb, width, height, bitmap.getConfig())
-        };
+        textViewResult.setText("Character : " + SkeletonRecognizer.recognize(feature));
+        return stringBuffer;
     }
 
     private int zhangSuenStep(int[] pixels, int xmin, int ymin, int xmax, int ymax, int width) {
@@ -187,7 +243,7 @@ public class Act_TugasUTS extends AppCompatActivity {
         return count;
     }
 
-    private static int[] zhangSuenAB(int[] neighbours) {
+    private int[] zhangSuenAB(int[] neighbours) {
         int countA = 0;
         int countB = 0;
 
@@ -203,100 +259,7 @@ public class Act_TugasUTS extends AppCompatActivity {
         return new int[]{countA, countB};
     }
 
-    private void customStep(int[] pixels, int xmin, int ymin, int xmax, int ymax, int x, int y, int width) {
-        int counterDirection, length, c, d, averageLength;
-
-        int a = x;
-        int b = y;
-        int direction = 2;
-        int totalLength = 0;
-        int chainCount = 0;
-        int[][] neighbours = {{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}};
-
-        do {
-            int i = 0;
-            for (; i < 8; i++) {
-                int pixel = pixels[(a + neighbours[(direction + i + 5) % 8][0]) + (b + neighbours[(direction + i + 5) % 8][1]) * width] & 0x000000ff;
-                if (pixel == 0) break;
-            }
-
-            if (i == 9) {
-                return;
-            } else {
-                direction = (direction + i + 5) % 8;
-                counterDirection = (direction + 2) % 8;
-                c = a + neighbours[counterDirection][0];
-                d = b + neighbours[counterDirection][1];
-                length = 0;
-
-                while ((pixels[c + d * width] & 0x000000ff) == 0) {
-                    c = c + neighbours[counterDirection][0];
-                    d = d + neighbours[counterDirection][1];
-                    length++;
-                }
-
-                if (length > 1) {
-                    totalLength += length;
-                    chainCount++;
-                }
-
-                a = a + neighbours[direction][0];
-                b = b + neighbours[direction][1];
-            }
-        }
-        while (!(a == x && b == y));
-
-        averageLength = totalLength / chainCount;
-        a = x;
-        b = y;
-        direction = 2;
-
-        do {
-            int i = 0;
-            for (; i < 8; i++) {
-                int pixel = pixels[(a + neighbours[(direction + i + 5) % 8][0]) + (b + neighbours[(direction + i + 5) % 8][1]) * width] & 0x000000ff;
-                if (pixel == 0) break;
-            }
-
-            if (i == 9) {
-                return;
-            } else {
-                direction = (direction + i + 5) % 8;
-                counterDirection = (direction + 2) % 8;
-                c = a + neighbours[counterDirection][0];
-                d = b + neighbours[counterDirection][1];
-                length = 0;
-
-                while ((pixels[c + d * width] & 0x000000ff) == 0) {
-                    c = c + neighbours[counterDirection][0];
-                    d = d + neighbours[counterDirection][1];
-                    length++;
-                }
-
-                if (length > 1 && length <= averageLength) {
-                    c = (c - 1 + a) / 2;
-                    d = (d - 1 + b) / 2;
-                    pixels[c + d * width] = pixels[c + d * width] | 0x0000ff00;
-                }
-
-                a = a + neighbours[direction][0];
-                b = b + neighbours[direction][1];
-            }
-        }
-        while (!(a == x && b == y));
-
-        for (b = ymin; b <= ymax; b++) {
-            for (a = xmin; a <= xmax; a++) {
-                if ((pixels[a + b * width] & 0x00ffffff) == 0x0000ff00) {
-                    pixels[a + b * width] = pixels[a + b * width] & 0xff000000;
-                } else if ((pixels[a + b * width] & 0x000000ff) == 0) {
-                    pixels[a + b * width] = pixels[a + b * width] | 0x00ffffff;
-                }
-            }
-        }
-    }
-
-    private int[] floodFill(int[] pixels, int x, int y, int width) {
+    private static int[] floodFill(int[] pixels, int x, int y, int width) {
 
         int xmax = x;
         int xmin = x;
@@ -334,5 +297,179 @@ public class Act_TugasUTS extends AppCompatActivity {
         }
 
         return new int[]{xmin, ymin, xmax, ymax};
+    }
+
+    public static int[] getNewBorder(int[] pixels, int xmin, int ymin, int xmax, int ymax, int width) {
+
+        int pxmin = (xmax + xmin) / 2;
+        int pxmax = (xmax + xmin) / 2;
+        int pymin = (ymax + ymin) / 2;
+        int pymax = (ymax + ymin) / 2;
+
+        for (int j = ymin; j <= ymax; j++) {
+            for (int i = xmin; i <= xmax; i++) {
+                int p = i + j * width;
+
+                if ((pixels[p] & 0x00ffffff) == 0x00000000) {
+                    if (p % width < pxmin) pxmin = p % width;
+                    if (p % width > pxmax) pxmax = p % width;
+                    if (p / width < pymin) pymin = p / width;
+                    if (p / width > pymax) pymax = p / width;
+                }
+            }
+        }
+
+        return new int[]{pxmin, pymin, pxmax, pymax};
+    }
+
+    public SkeletonFeature extractFeature(int[] pixels, int xmin, int ymin, int xmax, int ymax, int width) {
+
+        SkeletonFeature sf = new SkeletonFeature();
+
+        // titik ujung
+        List<Integer> endpoints = new ArrayList<>();
+
+        for (int j = ymin; j <= ymax; j++) {
+            for (int i = xmin; i <= xmax; i++) {
+                int p = i + j * width;
+
+                if ((pixels[p] & 0x00ffffff) != 0x00ffffff) {
+                    int[] neighbour = {
+                            p - width,
+                            p - width + 1,
+                            p + 1,
+                            p + width + 1,
+                            p + width,
+                            p + width - 1,
+                            p - 1,
+                            p - width - 1
+                    };
+                    int black = 0;
+                    int index = -1;
+
+                    for (int k = 0; k < neighbour.length; k++) {
+                        if ((pixels[neighbour[k]] & 0x00ffffff) != 0x00ffffff) {
+                            black++;
+                            index = k;
+                        }
+                    }
+
+                    if (black == 1) {
+                        endpoints.add((index + 4) % 8);
+                    }
+                }
+            }
+        }
+
+        sf.endpoints = endpoints;
+
+        // garis tegak
+        int[] h = new int[ymax - ymin + 1];
+        int[] v = new int[xmax - xmin + 1];
+
+        for (int j = ymin; j <= ymax; j++) {
+            for (int i = xmin; i <= xmax; i++) {
+                int p = i + j * width;
+
+                if ((pixels[p] & 0x00ffffff) != 0x00ffffff) {
+                    h[j - ymin]++;
+                    v[i - xmin]++;
+                }
+            }
+        }
+
+        int[] hsum = new int[3];
+        for (int i = 0; i < h.length; i++) {
+            if (h[i] > (xmax - xmin + 1) / 2 && h[i] > 1) {
+                if (i < (ymax - ymin) * 4 / 10) {
+                    hsum[0]++;
+                } else if (i < (ymax - ymin) * 6 / 10) {
+                    hsum[1]++;
+                } else {
+                    hsum[2]++;
+                }
+            }
+        }
+
+        int[] vsum = new int[3];
+        for (int i = 0; i < v.length; i++) {
+            if (v[i] > (ymax - ymin + 1) / 2 && v[i] > 0) {
+                if (i < (xmax - xmin) * 4 / 10) {
+                    vsum[0]++;
+                } else if (i < (xmax - xmin) * 6 / 10) {
+                    vsum[1]++;
+                } else {
+                    vsum[2]++;
+                }
+            }
+        }
+
+        sf.hTop = hsum[0] > 0;
+        sf.hMid = hsum[1] > 0;
+        sf.hBottom = hsum[2] > 0;
+        sf.vLeft = vsum[0] > 0;
+        sf.vMid = vsum[1] > 0;
+        sf.vRight = vsum[2] > 0;
+
+        // lubang
+        int[] hole = new int[3];
+        for (int j = ymin; j <= ymax; j++) {
+            for (int i = xmin; i <= xmax; i++) {
+                int p = i + j * width;
+
+                if ((pixels[p] & 0x00ffffff) == 0x00ffffff) {
+                    int midpoint = holeFloodFill(pixels, xmin - 1, ymin - 1, xmax + 1, ymax + 1, width, p);
+
+                    if (midpoint / width < (ymax - ymin + 2) * 4 / 10 + (ymin - 1)) {
+                        hole[0]++;
+                    } else if (midpoint / width < (ymax - ymin + 2) * 6 / 10 + (ymin - 1)) {
+                        hole[1]++;
+                    } else {
+                        hole[2]++;
+                    }
+                }
+            }
+        }
+
+        sf.lTop = hole[0] > 0;
+        sf.lMid = hole[1] - 1 > 0;
+        sf.lBottom = hole[2] > 0;
+
+        return sf;
+    }
+
+    private int holeFloodFill(int[] pixels, int xmin, int ymin, int xmax, int ymax, int width, int p) {
+
+        int pxmin = p % width;
+        int pxmax = p % width;
+        int pymin = p / width;
+        int pymax = p / width;
+        Queue<Integer> queue = new ArrayDeque<>();
+
+        queue.offer(p);
+
+        while (!queue.isEmpty()) {
+            int pt = queue.poll();
+
+            if ((pixels[pt] & 0x00ffffff) == 0x00ffffff
+                    && xmin <= (pt % width)
+                    && (pt % width) <= xmax
+                    && ymin <= (pt / width)
+                    && (pt / width) <= ymax) {
+                pixels[pt] = (pixels[pt] & 0xff000000);
+
+                if (pt % width < pxmin) pxmin = pt % width;
+                if (pt % width > pxmax) pxmax = pt % width;
+                if (pt / width < pymin) pymin = pt / width;
+                if (pt / width > pymax) pymax = pt / width;
+
+                queue.offer(pt - width);
+                queue.offer(pt + 1);
+                queue.offer(pt + width);
+                queue.offer(pt - 1);
+            }
+        }
+
+        return (pxmax + pxmin) / 2 + (pymax + pymin) / 2 * width;
     }
 }
