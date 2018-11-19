@@ -56,6 +56,24 @@
             android:layout_height="wrap_content"
             android:text="Tugas UTS Skeleton Recognition"
             android:id="@+id/buttonTugasUTS"/>
+			
+		<Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tugas 7 Handwriting Recognition"
+            android:id="@+id/buttonTugas7"/>
+			
+		<Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tugas 8 Face Recognition"
+            android:id="@+id/buttonTugas8"/>
+			
+		<Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tugas 9 Sobel dan Robinson"
+            android:id="@+id/buttonTugas9"/>
 
     </LinearLayout>
 </ScrollView>

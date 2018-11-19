@@ -14,6 +14,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button buttonTugas5;
     private Button buttonTugas6;
     private Button buttonTugasUTS;
+	private Button buttonTugas7;
+	private Button buttonTugas8;
+	private Button buttonTugas9;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +29,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.buttonTugas5 = this.findViewById(R.id.buttonTugas5);
         this.buttonTugas6 = this.findViewById(R.id.buttonTugas6);
         this.buttonTugasUTS = this.findViewById(R.id.buttonTugasUTS);
+		this.buttonTugas7 = this.findViewById(R.id.buttonTugas7);
+		this.buttonTugas8 = this.findViewById(R.id.buttonTugas8);
+		this.buttonTugas9 = this.findViewById(R.id.buttonTugas9);
 
         this.buttonTugas1.setOnClickListener(this);
         this.buttonTugas2.setOnClickListener(this);
@@ -34,6 +40,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         this.buttonTugas5.setOnClickListener(this);
         this.buttonTugas6.setOnClickListener(this);
         this.buttonTugasUTS.setOnClickListener(this);
+		this.buttonTugas7.setOnClickListener(this);
+		this.buttonTugas8.setOnClickListener(this);
+		this.buttonTugas9.setOnClickListener(this);
     }
 
     @Override
@@ -58,6 +67,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (v==buttonTugasUTS){
             this.tugasUTS();
+        }
+		if (v==buttonTugas7){
+            this.tugas7();
+        }
+		if (v==buttonTugas8){
+            this.tugas8();
+        }
+		if (v==buttonTugas9){
+            this.tugas9();
         }
     }
 
@@ -93,6 +111,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void tugasUTS() {
         Intent intent = new Intent(MainActivity.this, Act_TugasUTS.class);
+        startActivity(intent);
+    }
+	
+	private void tugas7() {
+        Intent intent = new Intent(MainActivity.this, Act_Tugas7.class);
+        startActivity(intent);
+    }
+	
+	private void tugas8() {
+        Intent intent = new Intent(MainActivity.this, Act_Tugas8.class);
+        startActivity(intent);
+    }
+	
+	private void tugas9() {
+        Intent intent = new Intent(MainActivity.this, Act_Tugas9.class);
         startActivity(intent);
     }
 }

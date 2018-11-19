@@ -26,6 +26,14 @@
 		<activity android:name=".Act_Tugas5" />
 		<activity android:name=".Act_Tugas6" />
 		<activity android:name=".Act_TugasUTS" />
+		<activity android:name=".Act_Tugas7" />
+		<activity android:name=".Act_Tugas8" />
+		<activity android:name=".Act_Tugas9" />
+
+		<meta-data
+            android:name="com.google.android.gms.vision.DEPENDENCIES"
+            android:value="face" />
+			
     </application>
 
 </manifest>

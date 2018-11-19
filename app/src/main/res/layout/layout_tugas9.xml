@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SOBEL DAN ROBINSON"
+            android:textSize="25sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Load Image"
+                android:onClick="loadImage"
+                android:id="@+id/buttonLoadImage"/>
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Open Camera"
+                android:onClick="openCamera"
+                android:id="@+id/buttonOpenCamera"/>
+            <Button
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Process"
+                android:onClick="process"
+                android:id="@+id/buttonProcess"/>
+
+        </LinearLayout>
+
+		<ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:id="@+id/imageView"/>
+		
+		<TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SOBEL"
+            android:textSize="20sp" />
+		
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:id="@+id/imageViewSobel"/>
+			
+		<TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ROBINSON"
+            android:textSize="20sp" />
+		
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:id="@+id/imageViewRobinson1"/>
+			
+		<ImageView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:id="@+id/imageViewRobinson2"/>
+
+    </LinearLayout>
+</ScrollView>
